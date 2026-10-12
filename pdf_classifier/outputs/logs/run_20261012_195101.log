@@ -1,0 +1,77 @@
+2026-10-12 19:51:01  INFO      __main__  ============================================================
+2026-10-12 19:51:01  INFO      __main__  PDF Document Classifier — train
+2026-10-12 19:51:01  INFO      __main__  ============================================================
+2026-10-12 19:51:01  INFO      __main__  Corpus loaded: 1327 rows
+2026-10-12 19:51:01  WARNING   __main__  Excluded 3 documents with non-ok status.
+2026-10-12 19:51:01  INFO      __main__  Class counts (usable):
+category
+invoice    1035
+receipt     187
+bill        102
+2026-10-12 19:51:01  INFO      __main__  Split sizes -> train: 926  val: 199  test: 199
+2026-10-12 19:51:01  INFO      __main__    train: {'invoice': 723, 'receipt': 131, 'bill': 72}
+2026-10-12 19:51:01  INFO      __main__    val: {'invoice': 156, 'receipt': 28, 'bill': 15}
+2026-10-12 19:51:01  INFO      __main__    test: {'invoice': 156, 'receipt': 28, 'bill': 15}
+2026-10-12 19:51:01  INFO      __main__  Training Logistic Regression ...
+2026-10-12 19:51:01  INFO      __main__  -- LR_val results ----------------------------------
+2026-10-12 19:51:01  INFO      __main__  Macro F1 : 0.9379
+2026-10-12 19:51:01  INFO      __main__  Accuracy : 0.9698
+2026-10-12 19:51:01  INFO      __main__  
+              precision    recall  f1-score   support
+
+        bill       0.71      1.00      0.83        15
+     invoice       1.00      0.96      0.98       156
+     receipt       1.00      1.00      1.00        28
+
+    accuracy                           0.97       199
+   macro avg       0.90      0.99      0.94       199
+weighted avg       0.98      0.97      0.97       199
+
+2026-10-12 19:51:01  INFO      __main__  -- LR_test results ----------------------------------
+2026-10-12 19:51:01  INFO      __main__  Macro F1 : 0.9470
+2026-10-12 19:51:01  INFO      __main__  Accuracy : 0.9749
+2026-10-12 19:51:01  INFO      __main__  
+              precision    recall  f1-score   support
+
+        bill       0.75      1.00      0.86        15
+     invoice       1.00      0.97      0.98       156
+     receipt       1.00      1.00      1.00        28
+
+    accuracy                           0.97       199
+   macro avg       0.92      0.99      0.95       199
+weighted avg       0.98      0.97      0.98       199
+
+2026-10-12 19:51:01  INFO      __main__  Training Linear SVM ...
+2026-10-12 19:51:02  INFO      __main__  -- SVM_val results ----------------------------------
+2026-10-12 19:51:02  INFO      __main__  Macro F1 : 0.9379
+2026-10-12 19:51:02  INFO      __main__  Accuracy : 0.9698
+2026-10-12 19:51:02  INFO      __main__  
+              precision    recall  f1-score   support
+
+        bill       0.71      1.00      0.83        15
+     invoice       1.00      0.96      0.98       156
+     receipt       1.00      1.00      1.00        28
+
+    accuracy                           0.97       199
+   macro avg       0.90      0.99      0.94       199
+weighted avg       0.98      0.97      0.97       199
+
+2026-10-12 19:51:02  INFO      __main__  -- SVM_test results ----------------------------------
+2026-10-12 19:51:02  INFO      __main__  Macro F1 : 0.9470
+2026-10-12 19:51:02  INFO      __main__  Accuracy : 0.9749
+2026-10-12 19:51:02  INFO      __main__  
+              precision    recall  f1-score   support
+
+        bill       0.75      1.00      0.86        15
+     invoice       1.00      0.97      0.98       156
+     receipt       1.00      1.00      1.00        28
+
+    accuracy                           0.97       199
+   macro avg       0.92      0.99      0.95       199
+weighted avg       0.98      0.97      0.98       199
+
+2026-10-12 19:51:02  INFO      __main__  Best model: LogisticRegression  (test macro F1 = 0.9470)
+2026-10-12 19:51:03  INFO      __main__  Pipeline saved -> E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\pdf_classifier\outputs\models\pipeline.joblib
+2026-10-12 19:51:03  INFO      __main__  Evaluation report saved -> E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\pdf_classifier\outputs\reports\evaluation.json
+2026-10-12 19:51:03  INFO      __main__  Text report saved -> E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\pdf_classifier\outputs\reports\evaluation.txt
+2026-10-12 19:51:03  INFO      __main__  Training complete.

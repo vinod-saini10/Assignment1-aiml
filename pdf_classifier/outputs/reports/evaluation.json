@@ -1,0 +1,321 @@
+{
+  "selected_model": "Baseline_LogisticRegression",
+  "best_hyperparameters": {
+    "clf__C": 0.5,
+    "tfidf__max_features": 10000,
+    "tfidf__ngram_range": [
+      1,
+      1
+    ]
+  },
+  "split_sizes": {
+    "train": 930,
+    "val": 196,
+    "dev_total": 1126,
+    "held_out_test": 198
+  },
+  "train_class_distribution": {
+    "Invoice": 727,
+    "Receipt": 131,
+    "Bill": 72
+  },
+  "val_class_distribution": {
+    "Invoice": 153,
+    "Receipt": 28,
+    "Bill": 15
+  },
+  "test_class_distribution": {
+    "Invoice": 155,
+    "Receipt": 28,
+    "Bill": 15
+  },
+  "validation_comparison": {
+    "Baseline_LogisticRegression": {
+      "split": "Baseline LR (Validation)",
+      "accuracy": 0.9744897959183674,
+      "macro_f1": 0.946843853820598,
+      "weighted_f1": 0.9761000745813276,
+      "report": {
+        "Bill": {
+          "precision": 0.75,
+          "recall": 1.0,
+          "f1-score": 0.8571428571428571,
+          "support": 15.0
+        },
+        "Invoice": {
+          "precision": 1.0,
+          "recall": 0.9673202614379085,
+          "f1-score": 0.9833887043189369,
+          "support": 153.0
+        },
+        "Receipt": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 28.0
+        },
+        "accuracy": 0.9744897959183674,
+        "macro avg": {
+          "precision": 0.9166666666666666,
+          "recall": 0.9891067538126362,
+          "f1-score": 0.946843853820598,
+          "support": 196.0
+        },
+        "weighted avg": {
+          "precision": 0.9808673469387755,
+          "recall": 0.9744897959183674,
+          "f1-score": 0.9761000745813276,
+          "support": 196.0
+        }
+      },
+      "confusion_matrix": {
+        "labels": [
+          "Bill",
+          "Invoice",
+          "Receipt"
+        ],
+        "matrix": [
+          [
+            15,
+            0,
+            0
+          ],
+          [
+            5,
+            148,
+            0
+          ],
+          [
+            0,
+            0,
+            28
+          ]
+        ]
+      }
+    },
+    "Comparison_LinearSVM": {
+      "split": "Linear SVM (Validation)",
+      "accuracy": 0.9744897959183674,
+      "macro_f1": 0.946843853820598,
+      "weighted_f1": 0.9761000745813276,
+      "report": {
+        "Bill": {
+          "precision": 0.75,
+          "recall": 1.0,
+          "f1-score": 0.8571428571428571,
+          "support": 15.0
+        },
+        "Invoice": {
+          "precision": 1.0,
+          "recall": 0.9673202614379085,
+          "f1-score": 0.9833887043189369,
+          "support": 153.0
+        },
+        "Receipt": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 28.0
+        },
+        "accuracy": 0.9744897959183674,
+        "macro avg": {
+          "precision": 0.9166666666666666,
+          "recall": 0.9891067538126362,
+          "f1-score": 0.946843853820598,
+          "support": 196.0
+        },
+        "weighted avg": {
+          "precision": 0.9808673469387755,
+          "recall": 0.9744897959183674,
+          "f1-score": 0.9761000745813276,
+          "support": 196.0
+        }
+      },
+      "confusion_matrix": {
+        "labels": [
+          "Bill",
+          "Invoice",
+          "Receipt"
+        ],
+        "matrix": [
+          [
+            15,
+            0,
+            0
+          ],
+          [
+            5,
+            148,
+            0
+          ],
+          [
+            0,
+            0,
+            28
+          ]
+        ]
+      }
+    },
+    "Tuned_LogisticRegression": {
+      "split": "Tuned LR (Validation)",
+      "accuracy": 0.9744897959183674,
+      "macro_f1": 0.946843853820598,
+      "weighted_f1": 0.9761000745813276,
+      "report": {
+        "Bill": {
+          "precision": 0.75,
+          "recall": 1.0,
+          "f1-score": 0.8571428571428571,
+          "support": 15.0
+        },
+        "Invoice": {
+          "precision": 1.0,
+          "recall": 0.9673202614379085,
+          "f1-score": 0.9833887043189369,
+          "support": 153.0
+        },
+        "Receipt": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 28.0
+        },
+        "accuracy": 0.9744897959183674,
+        "macro avg": {
+          "precision": 0.9166666666666666,
+          "recall": 0.9891067538126362,
+          "f1-score": 0.946843853820598,
+          "support": 196.0
+        },
+        "weighted avg": {
+          "precision": 0.9808673469387755,
+          "recall": 0.9744897959183674,
+          "f1-score": 0.9761000745813276,
+          "support": 196.0
+        }
+      },
+      "confusion_matrix": {
+        "labels": [
+          "Bill",
+          "Invoice",
+          "Receipt"
+        ],
+        "matrix": [
+          [
+            15,
+            0,
+            0
+          ],
+          [
+            5,
+            148,
+            0
+          ],
+          [
+            0,
+            0,
+            28
+          ]
+        ]
+      }
+    }
+  },
+  "final_held_out_test_metrics": {
+    "split": "Final Model (Held-Out Test Set)",
+    "accuracy": 0.9797979797979798,
+    "macro_f1": 0.9564270152505446,
+    "weighted_f1": 0.9808542945797848,
+    "report": {
+      "Bill": {
+        "precision": 0.7894736842105263,
+        "recall": 1.0,
+        "f1-score": 0.8823529411764706,
+        "support": 15.0
+      },
+      "Invoice": {
+        "precision": 1.0,
+        "recall": 0.9741935483870968,
+        "f1-score": 0.9869281045751634,
+        "support": 155.0
+      },
+      "Receipt": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 28.0
+      },
+      "accuracy": 0.9797979797979798,
+      "macro avg": {
+        "precision": 0.9298245614035089,
+        "recall": 0.9913978494623655,
+        "f1-score": 0.9564270152505446,
+        "support": 198.0
+      },
+      "weighted avg": {
+        "precision": 0.9840510366826156,
+        "recall": 0.9797979797979798,
+        "f1-score": 0.9808542945797848,
+        "support": 198.0
+      }
+    },
+    "confusion_matrix": {
+      "labels": [
+        "Bill",
+        "Invoice",
+        "Receipt"
+      ],
+      "matrix": [
+        [
+          15,
+          0,
+          0
+        ],
+        [
+          4,
+          151,
+          0
+        ],
+        [
+          0,
+          0,
+          28
+        ]
+      ]
+    }
+  },
+  "misclassifications_count": 4,
+  "misclassifications": [
+    {
+      "doc_id": "INV_00114",
+      "source": "invoice/0094106664_Adani Electricity Mumbai Limited_YBL1_01042026.pdf",
+      "true_label": "Invoice",
+      "predicted_label": "Bill",
+      "word_count": 587,
+      "analysis_note": "Ambiguous document or boundary case (e.g. power bill file located in invoice directory)"
+    },
+    {
+      "doc_id": "INV_00118",
+      "source": "invoice/0094106668_Torrent Power Limited -Surat_YBL1_01042026.pdf",
+      "true_label": "Invoice",
+      "predicted_label": "Bill",
+      "word_count": 551,
+      "analysis_note": "Ambiguous document or boundary case (e.g. power bill file located in invoice directory)"
+    },
+    {
+      "doc_id": "INV_00123",
+      "source": "invoice/0094106691_Bharat Petroleum Corporation Limite_YBL1_01042026.pdf",
+      "true_label": "Invoice",
+      "predicted_label": "Bill",
+      "word_count": 543,
+      "analysis_note": "Ambiguous document or boundary case (e.g. power bill file located in invoice directory)"
+    },
+    {
+      "doc_id": "INV_00125",
+      "source": "invoice/0094106695_RELIANCE INDUSTRIES LTD(NAGPUR)_YBL1_01042026.pdf",
+      "true_label": "Invoice",
+      "predicted_label": "Bill",
+      "word_count": 533,
+      "analysis_note": "Ambiguous document or boundary case (e.g. power bill file located in invoice directory)"
+    }
+  ]
+}

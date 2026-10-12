@@ -1,0 +1,38 @@
+2026-10-12 19:06:13  INFO      __main__  ============================================================
+2026-10-12 19:06:13  INFO      __main__  PDF Document Classifier — build_corpus
+2026-10-12 19:06:13  INFO      __main__  ============================================================
+2026-10-12 19:06:13  INFO      __main__    bill       102 PDFs  in  E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\bill
+2026-10-12 19:06:13  INFO      __main__    invoice   1035 PDFs  in  E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\invoices
+2026-10-12 19:06:13  INFO      __main__    receipt    190 PDFs  in  E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\receipts
+2026-10-12 19:06:13  INFO      __main__  Total PDFs discovered: 1327
+2026-10-12 19:06:13  INFO      __main__  Processing 1 / 1327  (0094106605_BSES Rajdhani Power Limited_YBL1_01042026.pdf)
+2026-10-12 19:06:18  INFO      __main__  Processing 100 / 1327  (0094106813_North Central Railway_YBL1_04052026.pdf)
+2026-10-12 19:06:20  INFO      __main__  Processing 200 / 1327  (invoice_Alejandro Savely_41450.pdf)
+2026-10-12 19:06:23  INFO      __main__  Processing 300 / 1327  (invoice_Anthony Jacobs_32163.pdf)
+2026-10-12 19:06:25  INFO      __main__  Processing 400 / 1327  (invoice_Bradley Talbott_28557.pdf)
+2026-10-12 19:06:27  INFO      __main__  Processing 500 / 1327  (invoice_Darrin Sayre_7386.pdf)
+2026-10-12 19:06:29  INFO      __main__  Processing 600 / 1327  (invoice_Frank Merwin_24600.pdf)
+2026-10-12 19:06:31  INFO      __main__  Processing 700 / 1327  (invoice_John Huston_16892.pdf)
+2026-10-12 19:06:32  INFO      __main__  Processing 800 / 1327  (invoice_Meg Tillman_22530.pdf)
+2026-10-12 19:06:34  INFO      __main__  Processing 900 / 1327  (invoice_Paul Prost_24673.pdf)
+2026-10-12 19:06:36  INFO      __main__  Processing 1000 / 1327  (invoice_Sarah Bern_24395.pdf)
+2026-10-12 19:06:38  INFO      __main__  Processing 1100 / 1327  (invoice_Tom Zandusky_2967.pdf)
+2026-10-12 19:06:41  INFO      __main__  Processing 1200 / 1327  (receipt_063.pdf)
+2026-10-12 19:06:44  INFO      __main__  Processing 1300 / 1327  (receipt_163.pdf)
+2026-10-12 19:06:44  INFO      __main__  
+2026-10-12 19:06:44  INFO      __main__  ── Data Quality Report ──────────────────────────────────
+2026-10-12 19:06:44  INFO      __main__  Total documents   : 1327
+2026-10-12 19:06:44  INFO      __main__  Duplicates        : 0
+2026-10-12 19:06:44  INFO      __main__  Status breakdown  :
+2026-10-12 19:06:44  INFO      __main__    ok                 1136
+2026-10-12 19:06:44  INFO      __main__    ocr_unavailable    191
+2026-10-12 19:06:44  INFO      __main__  Extraction method :
+2026-10-12 19:06:44  INFO      __main__    direct             1136
+2026-10-12 19:06:44  INFO      __main__    failed             191
+2026-10-12 19:06:44  INFO      __main__  Category counts   :
+2026-10-12 19:06:44  INFO      __main__    bill     102
+2026-10-12 19:06:44  INFO      __main__    invoice  1035
+2026-10-12 19:06:44  INFO      __main__    receipt  190
+2026-10-12 19:06:44  WARNING   __main__  191 documents have no usable text — they will be excluded from training.
+2026-10-12 19:06:45  INFO      __main__  
+2026-10-12 19:06:45  INFO      __main__  Corpus saved → E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\pdf_classifier\outputs\corpus.csv

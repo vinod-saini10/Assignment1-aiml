@@ -1,0 +1,108 @@
+{
+  "total_documents": 1327,
+  "usable_documents": 1324,
+  "excluded_documents": 3,
+  "class_distribution_all": {
+    "Invoice": 1035,
+    "Receipt": 190,
+    "Bill": 102
+  },
+  "class_distribution_usable": {
+    "Invoice": 1035,
+    "Receipt": 187,
+    "Bill": 102
+  },
+  "class_distribution_excluded": {
+    "Receipt": 3
+  },
+  "status_distribution": {
+    "ok": 1324,
+    "empty": 3
+  },
+  "extraction_method_distribution": {
+    "direct": 1136,
+    "ocr": 188,
+    "failed": 3
+  },
+  "method_by_category": {
+    "Bill": {
+      "direct": 101,
+      "ocr": 1
+    },
+    "Invoice": {
+      "direct": 1035
+    },
+    "Receipt": {
+      "ocr": 187,
+      "failed": 3
+    }
+  },
+  "text_length_statistics": {
+    "Bill": {
+      "count": 102,
+      "char_mean": 3243.1,
+      "char_median": 3291.5,
+      "char_min": 2238,
+      "char_max": 3576,
+      "word_mean": 563.8,
+      "word_median": 574.0,
+      "word_min": 379,
+      "word_max": 621
+    },
+    "Invoice": {
+      "count": 1035,
+      "char_mean": 462.6,
+      "char_median": 389.0,
+      "char_min": 92,
+      "char_max": 3437,
+      "word_mean": 83.0,
+      "word_median": 70.0,
+      "word_min": 18,
+      "word_max": 599
+    },
+    "Receipt": {
+      "count": 187,
+      "char_mean": 837.7,
+      "char_median": 784.0,
+      "char_min": 30,
+      "char_max": 1657,
+      "word_mean": 163.6,
+      "word_median": 158.0,
+      "word_min": 9,
+      "word_max": 312
+    }
+  },
+  "duplicate_analysis": {
+    "exact_file_byte_duplicates": 0,
+    "distinct_clean_texts": 1307,
+    "identical_clean_text_groups": 4,
+    "redundant_text_instances": 17
+  },
+  "data_quality_flags": {
+    "misplaced_power_bills_in_invoices_count": 28,
+    "misplaced_power_bills_note": "28 documents in invoices/ originate from power utility billing templates (BSES/Chhattisgarh), matching the bills in bill/. Folder label preserved per user instruction.",
+    "excluded_records": [
+      {
+        "doc_id": "REC_01171",
+        "source": "Receipt/receipt_034.pdf",
+        "category": "Receipt",
+        "status": "empty",
+        "reason": "Text length below minimum threshold (length=0)"
+      },
+      {
+        "doc_id": "REC_01254",
+        "source": "Receipt/receipt_117.pdf",
+        "category": "Receipt",
+        "status": "empty",
+        "reason": "Text length below minimum threshold (length=0)"
+      },
+      {
+        "doc_id": "REC_01273",
+        "source": "Receipt/receipt_136.pdf",
+        "category": "Receipt",
+        "status": "empty",
+        "reason": "Text length below minimum threshold (length=0)"
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+2026-10-12 20:19:12  INFO      pdf_classifier.extractor  PyMuPDF embedded Tesseract OCR available via E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\tessdata.
+2026-10-12 20:19:13  DEBUG     pdf_classifier.extractor  pytesseract error: tesseract is not installed or it's not in your PATH. See README file for more information.
+2026-10-12 20:19:13  WARNING   pdf_classifier.extractor  empty         tmp8d8rffj0.pdf  [failed]
+2026-10-12 20:19:13  ERROR     pdf_classifier.extractor  Cannot open tmpgosoe16g.pdf: Failed to open file 'C:\\Users\\hp\\AppData\\Local\\Temp\\tmpgosoe16g.pdf' as type pdf.
+2026-10-12 20:19:15  ERROR     pdf_classifier.extractor  Cannot open tmp_1brt3g3.pdf: Failed to open file 'C:\\Users\\hp\\AppData\\Local\\Temp\\tmp_1brt3g3.pdf' as type pdf.
+2026-10-12 20:19:16  DEBUG     pdf_classifier.extractor  pytesseract error: tesseract is not installed or it's not in your PATH. See README file for more information.
+2026-10-12 20:19:16  WARNING   pdf_classifier.extractor  empty         tmplojp9y3z.pdf  [failed]

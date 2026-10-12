@@ -1,0 +1,19 @@
+# Dataset
+invoices/
+receipts/
+dataset/
+data/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Logs
+*.log
+
+# Virtual environment
+.venv/
+venv/
+
+# Generated outputs
+pdf_classifier/outputs/logs/

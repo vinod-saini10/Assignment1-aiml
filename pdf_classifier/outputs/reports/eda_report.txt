@@ -1,0 +1,32 @@
+PDF Document Classifier — Exploratory Data Analysis & Data Quality Report
+===========================================================================
+
+Total PDFs in workspace       : 1327
+Usable documents for training : 1324 (99.8%)
+Excluded unreadable/empty docs: 3
+
+-- Class Distribution --
+  Bill      :  102 usable /  102 total (100.0%)
+  Invoice   : 1035 usable / 1035 total (100.0%)
+  Receipt   :  187 usable /  190 total (98.4%)
+
+-- Extraction Methods --
+  direct    : 1136 docs (85.6%)
+  ocr       :  188 docs (14.2%)
+  failed    :    3 docs (0.2%)
+
+-- Text Length Statistics (Clean Words) --
+  Bill      : mean=563.8 words, median=574.0, range=[379, 621]
+  Invoice   : mean=83.0 words, median=70.0, range=[18, 599]
+  Receipt   : mean=163.6 words, median=158.0, range=[9, 312]
+
+-- Duplicates & Leakage Checks --
+  Exact file byte duplicates (SHA-256) : 0
+  Identical text groups                : 4 groups (17 redundant instances)
+
+-- Data Quality Flags & Exclusions --
+  Misplaced power bills in invoices/: 28 files (templates match bill/)
+  Excluded empty scans: 3 files:
+    - Receipt/receipt_034.pdf: Text length below minimum threshold (length=0)
+    - Receipt/receipt_117.pdf: Text length below minimum threshold (length=0)
+    - Receipt/receipt_136.pdf: Text length below minimum threshold (length=0)

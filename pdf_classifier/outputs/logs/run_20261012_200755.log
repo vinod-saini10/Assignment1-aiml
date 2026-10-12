@@ -1,0 +1,27 @@
+2026-10-12 20:07:55  INFO      __main__  ============================================================
+2026-10-12 20:07:55  INFO      __main__  PDF Document Classifier — build_corpus
+2026-10-12 20:07:55  INFO      __main__  ============================================================
+2026-10-12 20:07:55  INFO      __main__    Bill       102 PDFs  in  E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\bill
+2026-10-12 20:07:55  INFO      __main__    Invoice   1035 PDFs  in  E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\invoices
+2026-10-12 20:07:55  INFO      __main__    Receipt    190 PDFs  in  E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\receipts
+2026-10-12 20:07:55  INFO      __main__  Total PDFs discovered: 1327
+2026-10-12 20:07:56  INFO      __main__  Loaded 1324 previously extracted 'ok' documents from cache.
+2026-10-12 20:07:57  INFO      __main__  
+2026-10-12 20:07:57  INFO      __main__  -- Data Quality Report ----------------------------------
+2026-10-12 20:07:57  INFO      __main__  Total documents   : 1327
+2026-10-12 20:07:57  INFO      __main__  Duplicates        : 0
+2026-10-12 20:07:57  INFO      __main__  Status breakdown  :
+2026-10-12 20:07:57  INFO      __main__    ok                 1324
+2026-10-12 20:07:57  INFO      __main__    empty              3
+2026-10-12 20:07:57  INFO      __main__  Extraction method :
+2026-10-12 20:07:57  INFO      __main__    direct             1136
+2026-10-12 20:07:57  INFO      __main__    ocr                188
+2026-10-12 20:07:57  INFO      __main__    failed             3
+2026-10-12 20:07:57  INFO      __main__  Category counts   :
+2026-10-12 20:07:57  INFO      __main__    Bill     102
+2026-10-12 20:07:57  INFO      __main__    Invoice  1035
+2026-10-12 20:07:57  INFO      __main__    Receipt  190
+2026-10-12 20:07:57  WARNING   __main__  3 documents have no usable text - they will be excluded from training.
+2026-10-12 20:07:57  INFO      __main__  Preserved existing corpus backup -> E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\pdf_classifier\outputs\corpus_backup.csv
+2026-10-12 20:07:57  INFO      __main__  
+2026-10-12 20:07:57  INFO      __main__  Corpus saved -> E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\pdf_classifier\outputs\corpus.csv

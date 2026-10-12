@@ -1,0 +1,42 @@
+PDF Document Classification — Model Evaluation & Performance Report
+===========================================================================
+
+Selected Winning Model   : Baseline_LogisticRegression
+Best Hyperparameters     : {'clf__C': 0.5, 'tfidf__max_features': 10000, 'tfidf__ngram_range': (1, 1)}
+
+-- Split Sizes & Stratification --
+  Training Split         : 930 documents
+  Validation Split       : 196 documents
+  Development Total      : 1126 documents
+  Held-Out Test Split    : 198 documents
+
+-- Validation Model Selection Comparison --
+  Baseline Logistic Reg. : Accuracy=0.9745, Macro F1=0.9468
+  Comparison Linear SVM  : Accuracy=0.9745, Macro F1=0.9468
+  Tuned Logistic Reg.    : Accuracy=0.9745, Macro F1=0.9468
+
+-- Final Held-Out Test Set Results --
+  Overall Accuracy       : 0.9798 (98.0%)
+  Macro F1               : 0.9564
+  Weighted F1            : 0.9809
+
+Per-Class Classification Report:
+  Bill       -> Precision: 0.7895, Recall: 1.0000, F1: 0.8824, Support: 15.0
+  Invoice    -> Precision: 1.0000, Recall: 0.9742, F1: 0.9869, Support: 155.0
+  Receipt    -> Precision: 1.0000, Recall: 1.0000, F1: 1.0000, Support: 28.0
+
+Confusion Matrix (Rows=True, Cols=Predicted):
+  Classes: ['Bill', 'Invoice', 'Receipt']
+  [15, 0, 0]
+  [4, 151, 0]
+  [0, 0, 28]
+
+Misclassifications on Test Set (4 total):
+  - INV_00114 (invoice/0094106664_Adani Electricity Mumbai Limited_YBL1_01042026.pdf): True=Invoice, Pred=Bill [Ambiguous document or boundary case (e.g. power bill file located in invoice directory)]
+  - INV_00118 (invoice/0094106668_Torrent Power Limited -Surat_YBL1_01042026.pdf): True=Invoice, Pred=Bill [Ambiguous document or boundary case (e.g. power bill file located in invoice directory)]
+  - INV_00123 (invoice/0094106691_Bharat Petroleum Corporation Limite_YBL1_01042026.pdf): True=Invoice, Pred=Bill [Ambiguous document or boundary case (e.g. power bill file located in invoice directory)]
+  - INV_00125 (invoice/0094106695_RELIANCE INDUSTRIES LTD(NAGPUR)_YBL1_01042026.pdf): True=Invoice, Pred=Bill [Ambiguous document or boundary case (e.g. power bill file located in invoice directory)]
+
+Operational Parameters:
+  Inconclusive Confidence Threshold: 60%
+  Closed-world limitation: Only classifies Bill, Invoice, and Receipt documents.
