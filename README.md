@@ -3,6 +3,7 @@
 An audited, reproducible, end-to-end PDF document classification system that categorizes documents into **Bill**, **Invoice**, and **Receipt** using PyMuPDF text extraction, embedded Tesseract OCR fallback, and a scikit-learn TF-IDF + Logistic Regression / Linear SVM pipeline.
 
 ---
+<img src="screenshot/image.png" alt="Project Screenshot" width="600">
 
 ## 📁 Project Structure
 
