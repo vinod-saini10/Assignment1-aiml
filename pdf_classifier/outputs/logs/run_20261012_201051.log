@@ -1,8 +1,0 @@
-2026-10-12 20:10:51  INFO      __main__  ============================================================
-2026-10-12 20:10:51  INFO      __main__  PDF Document Classifier — Exploratory Data Analysis
-2026-10-12 20:10:51  INFO      __main__  ============================================================
-2026-10-12 20:10:51  INFO      __main__  Loaded corpus: 1327 documents
-2026-10-12 20:10:51  INFO      __main__  Saved EDA JSON summary -> E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\pdf_classifier\outputs\reports\eda_summary.json
-2026-10-12 20:10:51  INFO      __main__  Saved EDA text report -> E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\pdf_classifier\outputs\reports\eda_report.txt
-2026-10-12 20:10:52  INFO      __main__  Saved plots: class_distribution.png, extraction_methods.png, text_length_distribution.png
-2026-10-12 20:10:52  INFO      __main__  EDA completed successfully.

@@ -1,6 +1,0 @@
-2026-10-12 20:09:26  INFO      pdf_classifier.extractor  PyMuPDF embedded Tesseract OCR available via E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\tessdata.
-2026-10-12 20:09:26  WARNING   pdf_classifier.extractor  empty         receipt_034.pdf  [failed]
-2026-10-12 20:09:27  DEBUG     pdf_classifier.extractor  pytesseract error: tesseract is not installed or it's not in your PATH. See README file for more information.
-2026-10-12 20:09:27  WARNING   pdf_classifier.extractor  empty         receipt_117.pdf  [failed]
-2026-10-12 20:09:27  DEBUG     pdf_classifier.extractor  pytesseract error: tesseract is not installed or it's not in your PATH. See README file for more information.
-2026-10-12 20:09:27  WARNING   pdf_classifier.extractor  empty         receipt_136.pdf  [failed]
