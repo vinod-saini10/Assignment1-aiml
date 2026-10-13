@@ -13,8 +13,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 import pymupdf
+from PIL import Image
 
-from pdf_classifier.extractor import ExtractionResult, extract_pdf
+import pdf_classifier.extractor as extractor_module
+from pdf_classifier.extractor import ExtractionResult, extract_document, extract_pdf
 
 
 def _make_pdf(text: str) -> Path:
@@ -105,6 +107,40 @@ def test_multipage_pdf():
         assert result.page_count == 3
         assert result.status == "ok"
         assert "Page 1" in result.text or "page" in result.text.lower()
+    finally:
+        p.unlink(missing_ok=True)
+
+
+def test_image_extraction_uses_shared_result(monkeypatch):
+    """A valid image is dispatched through the image OCR path."""
+    tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+    tmp.close()
+    p = Path(tmp.name)
+    Image.new("RGB", (200, 100), "white").save(p)
+    monkeypatch.setattr(
+        extractor_module,
+        "_ocr_image",
+        lambda _: "INVOICE Total Amount NUM Customer Payment Terms",
+    )
+    try:
+        result = extract_document(p, "DOC_IMAGE", "unknown", "test/image")
+        assert result.status == "ok"
+        assert result.method == "ocr"
+        assert result.page_count == 1
+        assert "INVOICE" in result.text
+    finally:
+        p.unlink(missing_ok=True)
+
+
+def test_unreadable_image_is_reported():
+    tmp = tempfile.NamedTemporaryFile(suffix=".jpg", delete=False)
+    tmp.write(b"not an image")
+    tmp.close()
+    p = Path(tmp.name)
+    try:
+        result = extract_document(p, "DOC_BAD_IMAGE", "unknown", "test/image")
+        assert result.status == "corrupt"
+        assert result.method == "failed"
     finally:
         p.unlink(missing_ok=True)
 

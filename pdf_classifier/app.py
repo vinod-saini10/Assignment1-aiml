@@ -8,14 +8,22 @@ from __future__ import annotations
 
 import sys
 import tempfile
+from io import BytesIO
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import streamlit as st
 
-from pdf_classifier.config import CLASSES, INCONCLUSIVE_THRESHOLD, PIPELINE_PATH, REPORT_DIR
-from pdf_classifier.predict import PredictionResult, predict_pdf
+from pdf_classifier.config import (
+    CLASSES,
+    INCONCLUSIVE_THRESHOLD,
+    MAX_FILE_SIZE_MB,
+    PIPELINE_PATH,
+    REPORT_DIR,
+    SUPPORTED_EXTENSIONS,
+)
+from pdf_classifier.predict import PredictionResult, predict_document
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -125,9 +133,9 @@ st.markdown(
 )
 
 # ── Header ────────────────────────────────────────────────────────────────────
-st.markdown('<div class="hero-title">📄 PDF Document Classifier</div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-title">AI-Based Financial Document Classifier</div>', unsafe_allow_html=True)
 st.markdown(
-    '<div class="hero-subtitle">Upload a PDF and let the model classify it as an Invoice, Bill, or Receipt</div>',
+    '<div class="hero-subtitle">Upload a PDF or image to classify it as an Invoice, Bill, or Receipt</div>',
     unsafe_allow_html=True,
 )
 
@@ -186,31 +194,50 @@ if not model_ready:
     )
 
 uploaded = st.file_uploader(
-    "Drop a PDF here or click to browse",
-    type=["pdf"],
+    "Upload a PDF or image",
+    type=[extension.removeprefix(".") for extension in SUPPORTED_EXTENSIONS],
     disabled=not model_ready,
-    help="Only PDF files are supported (max 25MB).",
+    help=f"Supported formats: PDF, PNG, JPG, TIFF, BMP, and WEBP (max {MAX_FILE_SIZE_MB}MB).",
 )
 
 if uploaded and model_ready:
-    MAX_FILE_SIZE_MB = 25
     if uploaded.size > MAX_FILE_SIZE_MB * 1024 * 1024:
-        st.error(f"Uploaded file exceeds {MAX_FILE_SIZE_MB}MB limit. Please upload a smaller PDF.")
+        st.error(f"Uploaded file exceeds {MAX_FILE_SIZE_MB}MB. Please upload a smaller document.")
         st.stop()
 
-    with st.spinner("Extracting text and classifying …"):
-        # Save to temp file (Streamlit gives us a BytesIO-like object)
-        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
-            tmp.write(uploaded.read())
+    file_bytes = uploaded.getvalue()
+    suffix = Path(uploaded.name).suffix.lower()
+    st.caption(f"Selected: {uploaded.name} ({suffix.removeprefix('.').upper()})")
+
+    if suffix != ".pdf":
+        st.image(BytesIO(file_bytes), caption="Uploaded image")
+    else:
+        try:
+            import pymupdf
+            preview_doc = pymupdf.open(stream=file_bytes, filetype="pdf")
+            st.caption(f"PDF pages: {preview_doc.page_count}")
+            if preview_doc.page_count:
+                preview_pix = preview_doc[0].get_pixmap(matrix=pymupdf.Matrix(1, 1), alpha=False)
+                st.image(preview_pix.tobytes("png"), caption="First-page preview")
+            preview_doc.close()
+        except Exception:
+            st.warning("The PDF preview is unavailable. Analysis may still report a readable error.")
+
+    if not st.button("Analyze Document", type="primary", use_container_width=True):
+        st.stop()
+
+    with st.spinner("Extracting text and classifying document..."):
+        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+            tmp.write(file_bytes)
             tmp_path = Path(tmp.name)
 
         try:
-            pr: PredictionResult = predict_pdf(tmp_path)
-        except FileNotFoundError as e:
-            st.error(str(e))
+            pr: PredictionResult = predict_document(tmp_path)
+        except FileNotFoundError:
+            st.error("The trained model is unavailable. Check the installation and model files.")
             st.stop()
-        except Exception as e:
-            st.error(f"Prediction error: {e}")
+        except Exception:
+            st.error("The document could not be analyzed. Check that it is a valid, readable file.")
             st.stop()
         finally:
             tmp_path.unlink(missing_ok=True)
@@ -263,26 +290,26 @@ if uploaded and model_ready:
     st.markdown("</div>", unsafe_allow_html=True)
 
     # ── Class probability bars ────────────────────────────────────────────────
-    st.markdown("### 📊 Class Scores")
-    note_col = st.columns(1)[0]
-    note_col.caption(
-        "Scores represent model posterior probabilities for the closed-world 3 classes."
-    )
-
-    colors = {"Invoice": "#6366f1", "Bill": "#f59e0b", "Receipt": "#10b981"}
-    for cat in CLASSES:
-        prob = pr.probabilities.get(cat, 0.0)
-        col1, col2, col3 = st.columns([2, 5, 1])
-        col1.markdown(f"**{cat.title()}**")
-        col2.progress(min(prob, 1.0))
-        col3.markdown(f"`{prob:.2%}`")
+    # Do not render zero-valued class scores when extraction failed.
+    if pr.extraction.status == "ok" and pr.probabilities:
+        st.markdown("### 📊 Class Scores")
+        st.caption("Scores are model outputs for the closed-world three classes.")
+        for cat in CLASSES:
+            prob = pr.probabilities.get(cat)
+            if prob is None:
+                continue
+            col1, col2, col3 = st.columns([2, 5, 1])
+            col1.markdown(f"**{cat.title()}**")
+            col2.progress(min(max(prob, 0.0), 1.0))
+            col3.markdown(f"`{prob:.2%}`")
 
     # ── Document metadata ─────────────────────────────────────────────────────
     with st.expander("📎 Document metadata"):
-        m1, m2, m3 = st.columns(3)
+        m1, m2, m3, m4 = st.columns(4)
         m1.metric("Pages", pr.extraction.page_count)
         m2.metric("Extraction", pr.extraction.method)
         m3.metric("Status", pr.extraction.status)
+        m4.metric("Characters", pr.extraction.character_count)
         st.caption(f"File hash (SHA-256): `{pr.extraction.file_hash[:24]}…`")
 
     # ── Extracted text preview ────────────────────────────────────────────────
@@ -292,6 +319,13 @@ if uploaded and model_ready:
         else:
             st.warning("No text could be extracted from this document.")
 
+    st.download_button(
+        "Download extracted text",
+        data=pr.extraction.text,
+        file_name=f"{Path(uploaded.name).stem}_extracted.txt",
+        mime="text/plain",
+    )
+
 elif not uploaded:
     # Empty state
     st.markdown(
@@ -299,7 +333,7 @@ elif not uploaded:
         <div class="glass-card" style="text-align:center;padding:3rem;">
             <div style="font-size:3rem;margin-bottom:1rem;">📂</div>
             <div style="color:rgba(255,255,255,0.6);font-size:1rem;">
-                Upload a PDF above to get started
+                Upload a PDF or image above to get started
             </div>
         </div>
         """,

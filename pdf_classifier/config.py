@@ -42,6 +42,8 @@ MIN_TEXT_LENGTH = 30      # chars; pages below this trigger OCR fallback
 MAX_PAGES_PER_DOC = 50   # safety cap for memory
 OCR_DPI = 200             # render DPI for scanned pages
 OCR_LANG = "eng"
+SUPPORTED_EXTENSIONS = (".pdf", ".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp", ".webp")
+MAX_FILE_SIZE_MB = 25
 
 # ── Tesseract binary and tessdata paths
 TESSERACT_CMD = r"C:\Program Files\Tesseract-OCR\tesseract.exe"

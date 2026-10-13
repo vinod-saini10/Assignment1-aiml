@@ -1,0 +1,5 @@
+2026-10-13 13:52:29  INFO      pdf_classifier.extractor  PyMuPDF embedded Tesseract OCR available via E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\tessdata.
+2026-10-13 13:54:27  DEBUG     pdf_classifier.extractor  Image OCR error for tmppansuljq.png: tesseract is not installed or it's not in your PATH. See README file for more information.
+2026-10-13 13:54:47  DEBUG     pdf_classifier.extractor  Image OCR error for tmpnk11yugo.png: tesseract is not installed or it's not in your PATH. See README file for more information.
+2026-10-13 13:59:08  DEBUG     pdf_classifier.extractor  Image OCR error for tmphnt8_ddh.png: tesseract is not installed or it's not in your PATH. See README file for more information.
+2026-10-13 15:03:33  WARNING   pdf_classifier.extractor  OCR engine unavailable: Tesseract executable not found at 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe' or on PATH. Install Tesseract OCR and configure TESSERACT_CMD.

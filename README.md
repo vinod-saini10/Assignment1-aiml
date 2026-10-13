@@ -1,9 +1,14 @@
+ocr models
+vlms
+slm
+
 # PDF Document Classification Using OCR and Machine Learning
 
-An audited, reproducible, end-to-end PDF document classification system that categorizes documents into **Bill**, **Invoice**, and **Receipt** using PyMuPDF text extraction, embedded Tesseract OCR fallback, and a scikit-learn TF-IDF + Logistic Regression / Linear SVM pipeline.
+An audited, reproducible, end-to-end financial document classification system that categorizes PDF and image documents into **Bill**, **Invoice**, and **Receipt** using PyMuPDF text extraction, Tesseract OCR fallback, and a scikit-learn TF-IDF + Logistic Regression / Linear SVM pipeline.
 
 ---
 
+<img src="screenshot/image.png" alt="Project Screenshot" width="600">
 ## 📁 Project Structure
 
 ```
@@ -21,12 +26,12 @@ pdf_analyzer(miniPrj1)/
     ├── config.py                # Centralized paths, classes, and hyperparameters
     ├── logger.py                # Console and timestamped file logging
     ├── preprocessor.py          # Normalization, tokenization, whitespace cleanup
-    ├── extractor.py             # PyMuPDF direct extraction + embedded OCR fallback
+    ├── extractor.py             # PDF extraction, image validation, and OCR
     ├── build_corpus.py          # PDF discovery, deduplication, cached extraction, corpus export
     ├── eda.py                   # Exploratory data analysis, stats, charts, JSON summaries
     ├── train.py                 # Grouped stratified splitting, GridSearchCV tuning, held-out evaluation
-    ├── predict.py               # Single PDF inference with confidence and inconclusive flagging
-    ├── app.py                   # Streamlit web UI with glassmorphic cards and analytics
+    ├── predict.py               # PDF/image inference with confidence and inconclusive flagging
+    ├── app.py                   # Streamlit web UI for PDF and image uploads
     ├── tests/
     │   ├── __init__.py
     │   ├── test_extractor.py    # 5 unit tests for extraction, hashing, corrupt files
@@ -57,14 +62,15 @@ pdf_analyzer(miniPrj1)/
 
 The workspace contains **1,327** original PDF files across three directories:
 
-| Category | Source Folder | Document Count | Format & Properties | Extraction Method | Usable for Training |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Bill** | `bill/` | 102 | 2–3 pages; utility & power transmission bills | Direct (101) + OCR (1) | **102** (100.0%) |
-| **Invoice** | `invoices/` | 1,035 | 1 page (1,007) / 3 pages (28); retail & utility bills | Direct (1,035) | **1,035** (100.0%) |
-| **Receipt** | `receipts/` | 190 | 1 page; scanned store & restaurant receipts | OCR (187) + Empty (3) | **187** (98.4%) |
-| **Total** | — | **1,327** | — | **1,136 Direct + 188 OCR** | **1,324** (99.8%) |
+| Category    | Source Folder | Document Count | Format & Properties                                   | Extraction Method          | Usable for Training |
+| :---------- | :------------ | :------------- | :---------------------------------------------------- | :------------------------- | :------------------ |
+| **Bill**    | `bill/`       | 102            | 2–3 pages; utility & power transmission bills         | Direct (101) + OCR (1)     | **102** (100.0%)    |
+| **Invoice** | `invoices/`   | 1,035          | 1 page (1,007) / 3 pages (28); retail & utility bills | Direct (1,035)             | **1,035** (100.0%)  |
+| **Receipt** | `receipts/`   | 190            | 1 page; scanned store & restaurant receipts           | OCR (187) + Empty (3)      | **187** (98.4%)     |
+| **Total**   | —             | **1,327**      | —                                                     | **1,136 Direct + 188 OCR** | **1,324** (99.8%)   |
 
 ### Data Quality & Provenance Notes
+
 1. **Invoice Data Provenance**: Invoices were created by Ajigbayi, Oluwafemi Tosin using the Tableau Superstore dataset (see `invoices/ReadMe.txt`).
 2. **Misplaced Power Bills in Invoices**: Exactly **28 files** in `invoices/` (starting with `0094...`) are 3-page utility bills from power companies (BSES, Adani, etc.) with the exact same template as files in `bill/`. Per project requirements, their folder label is preserved as ground truth, but they are tracked and flagged in error analysis.
 3. **Excluded Empty Scans**: Exactly **3 receipt files** (`receipt_034.pdf`, `receipt_117.pdf`, `receipt_136.pdf`) are faint or blank scanned pages yielding under 30 characters. They are safely assigned `status=empty` and excluded from model training.
@@ -75,6 +81,7 @@ The workspace contains **1,327** original PDF files across three directories:
 ## 🔬 Machine Learning Architecture & Verification
 
 ### Data Splitting (Leakage Prevention)
+
 - **Grouping**: Documents are grouped by `clean_text` hash to guarantee identical and template-duplicate documents never cross splits.
 - **Stratified Group Split**:
   - **Train**: 930 documents (727 Invoice, 131 Receipt, 72 Bill)
@@ -83,6 +90,7 @@ The workspace contains **1,327** original PDF files across three directories:
 - **Zero Leakage**: Verified zero hash or group overlap between train, validation, and test splits.
 
 ### Hyperparameter Tuning & Model Selection
+
 - **Cross-Validation**: 5-fold Stratified K-Fold strictly on the training set.
 - **Tuned Hyperparameters**: Explored `C` (0.5, 1.0, 5.0), `max_features` (10,000, 20,000), `ngram_range` ((1, 1), (1, 2)).
 - **Validation Comparison**:
@@ -117,45 +125,68 @@ weighted avg     0.9841    0.9798    0.9809       198
 ## 🛠️ Step-by-Step Workflow & Commands
 
 ### 1. Environment Setup
-Install verified dependencies:
+
+Install the Python dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```
 
+The Python package `pytesseract` is only a wrapper; it does not install the Tesseract executable. On Windows, install Tesseract OCR separately, for example from the UB Mannheim builds, and ensure `tesseract.exe` is available at `C:\Program Files\Tesseract-OCR\tesseract.exe` or update `TESSERACT_CMD` in `pdf_classifier/config.py`. The repository includes `tessdata/eng.traineddata`, which is used as the configured English language data when PyMuPDF OCR is available.
+
+### Supported inputs and workflow
+
+The application accepts `.pdf`, `.png`, `.jpg`, `.jpeg`, `.tif`, `.tiff`, `.bmp`, and `.webp` files up to 25 MB. Digital PDF pages use embedded text first; only pages below the configured text threshold are sent to OCR. Images are validated with Pillow, converted to grayscale, enlarged when low resolution, sharpened, and sent to Tesseract. Text from all PDF pages is combined before the existing saved model is loaded for prediction.
+
+Upload a document, review its preview, and select **Analyze Document**. The app displays the extraction status, class scores, an uncertainty warning below the configured threshold, and the extracted text as a downloadable `.txt` file. Empty, unreadable, encrypted, corrupt, and unsupported documents are reported without producing a misleading class prediction.
+
 ### 2. Run Automated Test Suite
-Run all 24 unit and integration tests:
+
+Run the unit and integration tests:
+
 ```bash
 python -m pytest pdf_classifier/tests/ -v
 ```
 
 ### 3. Build & Refresh Dataset Corpus
+
 Extracts all digital PDFs and runs embedded OCR fallback on scanned files:
+
 ```bash
 python -m pdf_classifier.build_corpus
 ```
 
 ### 4. Run Exploratory Data Analysis & Quality Audit
+
 Generates data quality metrics, summary statistics, and plots:
+
 ```bash
 python -m pdf_classifier.eda
 ```
 
 ### 5. Train & Evaluate Pipeline
+
 Runs grouped stratified splitting, hyperparameter tuning, model selection, held-out evaluation, and saves the model pipeline:
+
 ```bash
 python -m pdf_classifier.train
 ```
 
 ### 6. Single Document Prediction (CLI)
-Predict any PDF from the command line:
+
+Predict any supported document from the command line:
+
 ```bash
 python -m pdf_classifier.predict "bill/0094106605_BSES Rajdhani Power Limited_YBL1_01042026.pdf"
 python -m pdf_classifier.predict "invoices/invoice_Aaron Bergman_36258.pdf"
 python -m pdf_classifier.predict "receipts/receipt_001.pdf"
+python -m pdf_classifier.predict "path/to/document.png"
 ```
 
 ### 7. Launch the Streamlit Web Application
+
 Launch the interactive web UI:
+
 ```bash
 streamlit run pdf_classifier/app.py
 ```
@@ -168,3 +199,4 @@ streamlit run pdf_classifier/app.py
 2. **Inconclusive Confidence Threshold**: Any document with maximum predicted probability below **60%** (or with unreadable/empty text) is explicitly flagged as `Inconclusive`.
 3. **Template Contamination**: The 28 utility bills inside `invoices/` represent label ambiguity in the source folders. When evaluated as `Invoice`, the model predicts `Bill` due to semantic content matching.
 4. **Scanned PDF Quality**: 3 of 190 receipts contain blank/faint images with insufficient contrast, resulting in empty extraction status.
+5. **OCR Dependency**: OCR requires the Tesseract executable in addition to the Python packages. Low-resolution, rotated, blurry, or text-free images may remain inconclusive and should be manually verified.

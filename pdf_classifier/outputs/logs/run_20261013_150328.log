@@ -1,0 +1,1 @@
+2026-10-13 15:03:33  WARNING   pdf_classifier.extractor  OCR engine unavailable: Tesseract executable not found at 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe' or on PATH. Install Tesseract OCR and configure TESSERACT_CMD.

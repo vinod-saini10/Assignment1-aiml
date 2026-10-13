@@ -20,7 +20,7 @@ from pdf_classifier.config import (
     INCONCLUSIVE_THRESHOLD,
     PIPELINE_PATH,
 )
-from pdf_classifier.extractor import ExtractionResult, extract_pdf
+from pdf_classifier.extractor import ExtractionResult, extract_document
 from pdf_classifier.preprocessor import preprocess
 
 
@@ -43,7 +43,7 @@ def load_pipeline():
     return joblib.load(PIPELINE_PATH)
 
 
-def predict_pdf(pdf_path: Path) -> PredictionResult:
+def predict_document(document_path: Path) -> PredictionResult:
     """
     Extract text from *pdf_path* and classify it.
 
@@ -53,15 +53,15 @@ def predict_pdf(pdf_path: Path) -> PredictionResult:
     """
     pipeline = load_pipeline()
 
-    doc_id = f"PRED_{pdf_path.stem[:20]}"
-    result = extract_pdf(pdf_path, doc_id, "unknown", str(pdf_path))
+    doc_id = f"PRED_{document_path.stem[:20]}"
+    result = extract_document(document_path, doc_id, "unknown", str(document_path))
     clean  = preprocess(result.text)
 
     # ── Handle unreadable or empty documents safely ───────────────────────────
     if result.status != "ok" or not clean.strip():
         return PredictionResult(
             predicted_class="Inconclusive",
-            probabilities={cls: 0.0 for cls in CLASSES},
+                probabilities={},
             is_inconclusive=True,
             extraction=result,
             clean_text_snippet="",
@@ -85,6 +85,19 @@ def predict_pdf(pdf_path: Path) -> PredictionResult:
         predicted = pipeline.predict([clean])[0]
         max_prob = float(np.max(proba_arr))
 
+    if (
+        set(proba_dict) != set(CLASSES)
+        or not np.isfinite(list(proba_dict.values())).all()
+        or any(prob < 0.0 or prob > 1.0 for prob in proba_dict.values())
+    ):
+        return PredictionResult(
+            predicted_class="Inconclusive",
+            probabilities={},
+            is_inconclusive=True,
+            extraction=result,
+            clean_text_snippet=clean[:500],
+        )
+
     is_inconclusive = max_prob < INCONCLUSIVE_THRESHOLD
 
     snippet = clean[:500] if clean else ""
@@ -97,18 +110,22 @@ def predict_pdf(pdf_path: Path) -> PredictionResult:
         clean_text_snippet=snippet,
     )
 
+def predict_pdf(pdf_path: Path) -> PredictionResult:
+    """Backward-compatible PDF prediction wrapper."""
+    return predict_document(pdf_path)
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python -m pdf_classifier.predict <path_to_pdf>")
+        print("Usage: python -m pdf_classifier.predict <path_to_document>")
         sys.exit(1)
 
-    pdf = Path(sys.argv[1])
-    if not pdf.exists():
-        print(f"File not found: {pdf}")
+    document = Path(sys.argv[1])
+    if not document.exists():
+        print(f"File not found: {document}")
         sys.exit(1)
 
-    pr = predict_pdf(pdf)
+    pr = predict_document(document)
     print(f"\nPredicted class : {pr.predicted_class}")
     print(f"Probabilities   : { {k: f'{v:.3f}' for k,v in pr.probabilities.items()} }")
     print(f"Inconclusive    : {pr.is_inconclusive}")

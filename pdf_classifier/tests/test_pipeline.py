@@ -10,12 +10,13 @@ from pathlib import Path
 
 import pymupdf
 import pytest
+from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from pdf_classifier.config import CLASSES, INCONCLUSIVE_THRESHOLD, PIPELINE_PATH, TESSDATA_DIR
 from pdf_classifier.extractor import extract_pdf
-from pdf_classifier.predict import PredictionResult, load_pipeline, predict_pdf
+from pdf_classifier.predict import PredictionResult, load_pipeline, predict_document, predict_pdf
 
 
 def _make_pdf(text: str) -> Path:
@@ -78,6 +79,24 @@ def test_predict_synthetic_bill():
         assert res.predicted_class == "Bill"
         assert res.probabilities["Bill"] > 0.50
         assert res.extraction.status == "ok"
+    finally:
+        p.unlink(missing_ok=True)
+
+
+def test_predict_image_with_controlled_ocr(monkeypatch):
+    """Image input reaches the same trained pipeline as PDF input."""
+    tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+    tmp.close()
+    p = Path(tmp.name)
+    Image.new("RGB", (200, 100), "white").save(p)
+    monkeypatch.setattr(
+        "pdf_classifier.extractor._ocr_image",
+        lambda _: "INVOICE Superstore Purchase Order Customer Item Amount Payment Terms Net 30",
+    )
+    try:
+        result = predict_document(p)
+        assert result.predicted_class in set(CLASSES) | {"Inconclusive"}
+        assert result.extraction.status == "ok"
     finally:
         p.unlink(missing_ok=True)
 

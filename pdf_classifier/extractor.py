@@ -17,6 +17,7 @@ from __future__ import annotations
 import hashlib
 import logging
 import os
+import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
@@ -41,26 +42,55 @@ log = get_logger(__name__, LOG_DIR)
 _tesseract_available: Optional[bool] = None
 
 
+def _resolve_tesseract_exe() -> Optional[str]:
+    """Return the best available Tesseract executable path, or None."""
+    # Prefer the explicitly configured path — checked first so the result is
+    # stable even when Tesseract is absent from the process PATH (e.g. Streamlit).
+    if Path(TESSERACT_CMD).exists():
+        return TESSERACT_CMD
+    on_path = shutil.which("tesseract")
+    if on_path:
+        return on_path
+    return None
+
+
 def _check_tesseract() -> bool:
     global _tesseract_available
     if _tesseract_available is not None:
         return _tesseract_available
 
-    # 1. Check PyMuPDF built-in OCR with local tessdata
-    if TESSDATA_DIR.exists() and any(TESSDATA_DIR.glob("*.traineddata")):
-        _tesseract_available = True
-        log.info("PyMuPDF embedded Tesseract OCR available via %s.", TESSDATA_DIR)
-        return True
-
-    # 2. Check external Tesseract binary via pytesseract
+    # Both PyMuPDF native OCR and pytesseract require the Tesseract executable.
     try:
         import pytesseract
-        pytesseract.pytesseract.tesseract_cmd = TESSERACT_CMD
+
+        executable = _resolve_tesseract_exe()
+        if not executable:
+            raise FileNotFoundError(
+                f"Tesseract executable not found at {TESSERACT_CMD!r} and not on PATH. "
+                "Install Tesseract OCR from https://github.com/UB-Mannheim/tesseract/wiki"
+            )
+        # Set the command path explicitly so it works even when Tesseract is
+        # not on the system PATH (common when launched via Streamlit or IDEs).
+        pytesseract.pytesseract.tesseract_cmd = executable
         pytesseract.get_tesseract_version()
         _tesseract_available = True
-        log.info("External Tesseract OCR available.")
+        log.info(
+            "Tesseract OCR available — exe: %s  tessdata: %s",
+            executable,
+            TESSDATA_DIR,
+        )
+    except FileNotFoundError as exc:
+        log.warning(
+            "tesseract_not_installed: %s",
+            exc,
+        )
+        _tesseract_available = False
     except Exception as exc:
-        log.warning("OCR engine not available: %s — scanned pages will be empty.", exc)
+        log.warning(
+            "tesseract_not_configured: %s — check TESSERACT_CMD in config.py.",
+            exc,
+            exc_info=True,
+        )
         _tesseract_available = False
 
     return _tesseract_available
@@ -91,12 +121,72 @@ def _ocr_page(page: pymupdf.Page) -> str:
         import pytesseract
         from PIL import Image
 
+        # Re-apply the exe path — Streamlit / IDE launchers may not have
+        # Tesseract on their PATH even though the binary is installed.
+        exe = _resolve_tesseract_exe()
+        if exe:
+            pytesseract.pytesseract.tesseract_cmd = exe
+
         mat = pymupdf.Matrix(OCR_DPI / 72, OCR_DPI / 72)
         pix = page.get_pixmap(matrix=mat, colorspace=pymupdf.csRGB)
         img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
         return pytesseract.image_to_string(img, lang=OCR_LANG)
     except Exception as exc:
-        log.debug("pytesseract error: %s", exc)
+        log.debug("pytesseract error: %s", exc, exc_info=True)
+        return ""
+
+
+def _ocr_image(image_path: Path) -> str:
+    """Preprocess an image and extract text with the configured Tesseract."""
+    if not _check_tesseract():
+        return ""
+    try:
+        from PIL import Image, ImageEnhance, ImageFilter, ImageOps
+        import pytesseract
+
+        # Always resolve and set the executable explicitly — Streamlit and other
+        # launchers may not inherit Tesseract on their PATH even when the binary
+        # exists at the configured location.
+        executable = _resolve_tesseract_exe()
+        if not executable:
+            log.error(
+                "ocr_execution_failed: Tesseract executable lost between _check_tesseract() "
+                "and _ocr_image() for %s. Check TESSERACT_CMD in config.py.",
+                image_path.name,
+            )
+            return ""
+        pytesseract.pytesseract.tesseract_cmd = executable
+
+        with Image.open(image_path) as image:
+            image.load()
+            image = ImageOps.exif_transpose(image).convert("RGB")
+            scale = 2 if max(image.size) < 1800 else 1
+            if scale > 1:
+                image = image.resize((image.width * scale, image.height * scale))
+
+            gray = ImageOps.grayscale(image)
+            gray = ImageEnhance.Contrast(gray).enhance(1.5).filter(ImageFilter.SHARPEN)
+            threshold = gray.point(lambda pixel: 255 if pixel > 180 else 0)
+            candidates = (image, gray, threshold)
+            texts = [
+                pytesseract.image_to_string(candidate, lang=OCR_LANG, config="--psm 6")
+                for candidate in candidates
+            ]
+            # Keep the richest result; thresholding can harm receipts with faint text.
+            best = max(texts, key=lambda t: len(t.strip()), default="")
+            if not best.strip():
+                log.warning(
+                    "empty_ocr_result: Tesseract ran on %s but returned no text.",
+                    image_path.name,
+                )
+            return best
+    except Exception as exc:
+        log.error(
+            "ocr_execution_failed for %s: %s",
+            image_path.name,
+            exc,
+            exc_info=True,
+        )
         return ""
 
 
@@ -113,6 +203,11 @@ class ExtractionResult:
     page_count: int
     source: str          # logical source label, e.g. 'bill/0094…'
     warnings: list[str] = field(default_factory=list)
+
+    @property
+    def character_count(self) -> int:
+        """Number of characters available to preprocessing/classification."""
+        return len(self.text)
 
 
 # ── File hash ─────────────────────────────────────────────────────────────────
@@ -187,6 +282,10 @@ def extract_pdf(
                 else:
                     if not _tesseract_available:
                         methods_used.add("ocr_unavailable")
+                        if "tesseract_unavailable: install Tesseract OCR and set TESSERACT_CMD" not in warnings:
+                            warnings.append(
+                                "tesseract_unavailable: install Tesseract OCR and set TESSERACT_CMD"
+                            )
                     else:
                         warnings.append(f"page_{i}_empty_after_ocr")
         except Exception as exc:
@@ -225,4 +324,71 @@ def extract_pdf(
         text=full_text, method=method, status=status,
         file_hash=fhash, page_count=page_count, source=source_label,
         warnings=warnings,
+    )
+
+
+def extract_image(
+    image_path: Path,
+    doc_id: str,
+    category: str,
+    source_label: str,
+) -> ExtractionResult:
+    """Validate an image and extract its text with Tesseract OCR."""
+    path_str = str(image_path)
+    try:
+        fhash = _sha256(image_path)
+    except OSError:
+        fhash = ""
+    warnings: list[str] = []
+
+    try:
+        from PIL import Image
+
+        with Image.open(image_path) as image:
+            image.verify()
+    except Exception as exc:
+        log.warning("Cannot read image %s: %s", image_path.name, exc)
+        return ExtractionResult(
+            doc_id=doc_id, path=path_str, category=category, text="",
+            method="failed", status="corrupt", file_hash=fhash,
+            page_count=1, source=source_label, warnings=["unreadable_image"],
+        )
+
+    text = _ocr_image(image_path).strip()
+    if len(text) < MIN_TEXT_LENGTH:
+        if not _check_tesseract():
+            warnings.append(
+                "tesseract_unavailable: install Tesseract OCR and set TESSERACT_CMD"
+            )
+            status = "ocr_unavailable"
+        else:
+            warnings.append("insufficient_text_after_ocr")
+            status = "empty"
+        method = "failed" if status == "ocr_unavailable" else "ocr"
+    else:
+        status, method = "ok", "ocr"
+
+    return ExtractionResult(
+        doc_id=doc_id, path=path_str, category=category, text=text,
+        method=method, status=status, file_hash=fhash, page_count=1,
+        source=source_label, warnings=warnings,
+    )
+
+
+def extract_document(
+    document_path: Path,
+    doc_id: str,
+    category: str,
+    source_label: str,
+) -> ExtractionResult:
+    """Extract text from a supported PDF or image document."""
+    suffix = document_path.suffix.lower()
+    if suffix == ".pdf":
+        return extract_pdf(document_path, doc_id, category, source_label)
+    if suffix in {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp", ".webp"}:
+        return extract_image(document_path, doc_id, category, source_label)
+    return ExtractionResult(
+        doc_id=doc_id, path=str(document_path), category=category, text="",
+        method="failed", status="corrupt", file_hash="", page_count=0,
+        source=source_label, warnings=["unsupported_file_type"],
     )

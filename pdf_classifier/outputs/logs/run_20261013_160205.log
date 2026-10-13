@@ -1,0 +1,2 @@
+2026-10-13 16:02:06  INFO      pdf_classifier.extractor  Tesseract OCR available — exe: C:\Program Files\Tesseract-OCR\tesseract.exe  tessdata: E:\cfd\Sure Trust\pdf_analyzer(miniPrj1)\tessdata
+2026-10-13 16:02:13  ERROR     pdf_classifier.extractor  Cannot open tmpi1t4d7j4.pdf: Cannot open empty file: filename='C:\\Users\\hp\\AppData\\Local\\Temp\\tmpi1t4d7j4.pdf'.
