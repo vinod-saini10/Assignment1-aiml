@@ -7,6 +7,7 @@ slm
 An audited, reproducible, end-to-end financial document classification system that categorizes PDF and image documents into **Bill**, **Invoice**, and **Receipt** using PyMuPDF text extraction, Tesseract OCR fallback, and a scikit-learn TF-IDF + Logistic Regression / Linear SVM pipeline.
 
 ---
+<img src="screenshot/image.png" alt="Project Screenshot" width="600">
 
 <img src="screenshot/image.png" alt="Project Screenshot" width="600">
 ## 📁 Project Structure
