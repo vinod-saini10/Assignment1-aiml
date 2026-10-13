@@ -9,7 +9,7 @@ An audited, reproducible, end-to-end financial document classification system th
 ---
 <img src="screenshot/image.png" alt="Project Screenshot" width="600">
 
-<img src="screenshot/image.png" alt="Project Screenshot" width="600">
+
 ## 📁 Project Structure
 
 ```
